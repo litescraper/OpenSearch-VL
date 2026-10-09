@@ -510,3 +510,9 @@ If you find our works useful for your research, please consider citing:
 ## ⭐️ Star HistoryMore actions
 
 [![Star History Chart](https://api.star-history.com/svg?repos=shawn0728/OpenSearch-VL&type=Date)](https://star-history.com/#shawn0728/OpenSearch-VL&Date)
+
+## Serper-compatible endpoints
+
+Support any Serper.dev-compatible endpoint (like litescrape.com, serpbase.dev, serpensapi.org, and others)
+
+Set `SERPER_BASE_URL` to your provider's base URL and use its API key with the existing Serper key configuration. If unset, the default remains `https://google.serper.dev`. Trailing slashes and URL path prefixes are supported. Existing provider-specific endpoint overrides, where available, are unchanged.

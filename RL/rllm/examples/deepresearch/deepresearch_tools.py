@@ -9,6 +9,7 @@ Now supports both:
 - OpenAI native function calling (for o3, o3-mini, etc.)
 """
 
+from urllib.parse import urlparse
 import http.client
 import json
 import os
@@ -170,7 +171,10 @@ Placeholder results for '{query}'..."""
 
         for q in queries:
             try:
-                conn = http.client.HTTPSConnection("google.serper.dev")
+                serper_url = urlparse(os.getenv("SERPER_BASE_URL", "https://google.serper.dev"))
+                conn = (
+                    http.client.HTTPConnection if serper_url.scheme == "http" else http.client.HTTPSConnection
+                )(serper_url.netloc)
 
                 # Localize for Chinese queries
                 if self.contains_chinese(q):
@@ -183,7 +187,7 @@ Placeholder results for '{query}'..."""
                 # Retry logic
                 for i in range(5):
                     try:
-                        conn.request("POST", "/search", payload, headers)
+                        conn.request("POST", f"{serper_url.path.rstrip('/')}/search", payload, headers)
                         res = conn.getresponse()
                         break
                     except Exception:
@@ -256,11 +260,14 @@ To enable Google Scholar search, configure SERPER_API_KEY in your .env file."""
 
         for q in queries:
             try:
-                conn = http.client.HTTPSConnection("google.serper.dev")
+                serper_url = urlparse(os.getenv("SERPER_BASE_URL", "https://google.serper.dev"))
+                conn = (
+                    http.client.HTTPConnection if serper_url.scheme == "http" else http.client.HTTPSConnection
+                )(serper_url.netloc)
                 payload = json.dumps({"q": q, "type": "scholar", "num": 10})
                 headers = {"X-API-KEY": api_key, "Content-Type": "application/json"}
 
-                conn.request("POST", "/scholar", payload, headers)
+                conn.request("POST", f"{serper_url.path.rstrip('/')}/scholar", payload, headers)
                 res = conn.getresponse()
                 data = res.read()
                 results = json.loads(data.decode("utf-8"))
